@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Custom Zoom</title>
+    <link rel="stylesheet" href="popup.css">
+    <script src="popup.js" defer></script>
+  </head>
+  <body>
+    <main class="zoom-control" aria-label="Page zoom">
+      <div class="zoom-value">
+        <input id="zoom" type="text" inputmode="decimal" autocomplete="off"
+          spellcheck="false" aria-label="Zoom percentage" title="Type a percentage and press Enter">
+        <span aria-hidden="true">%</span>
+      </div>
+      <button id="decrease" class="icon-button" type="button" aria-label="Zoom out" title="Zoom out">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12"/></svg>
+      </button>
+      <button id="increase" class="icon-button" type="button" aria-label="Zoom in" title="Zoom in">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12M10 4v12"/></svg>
+      </button>
+      <button id="reset" class="reset-button" type="button">Reset</button>
+    </main>
+    <div id="status" role="status" aria-live="polite" hidden></div>
+  </body>
+</html>
