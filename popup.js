@@ -28,7 +28,7 @@ function format(percent) {
 
 function display(percent) {
   // Avoid displaying floating-point noise from Chrome's zoom API.
-  field.value = format(percent);
+  field.value = `${format(percent)}%`;
   decrease.disabled = percent <= MIN + 0.0001;
   increase.disabled = percent >= MAX - 0.0001;
   reset.disabled = Math.abs(percent - defaultPercent) < 0.0001;
@@ -68,7 +68,7 @@ field.addEventListener('change', () => enqueue(async () => {
 field.addEventListener('keydown', event => {
   if (event.key === 'Enter') field.blur();
   if (event.key === 'Escape') {
-    field.value = format(zoomPercent);
+    field.value = `${format(zoomPercent)}%`;
     field.blur();
   }
 });
