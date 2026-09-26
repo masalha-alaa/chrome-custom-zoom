@@ -46,7 +46,7 @@ input:disabled { opacity: .55; }
 button { font: inherit; cursor: pointer; }
 button:disabled { opacity: .45; cursor: default; }
 
-.step-buttons { display: flex; gap: 5px; }
+.step-buttons { display: flex; gap: 5px; margin-top: 30px; }
 
 .icon-button {
   display: grid;
