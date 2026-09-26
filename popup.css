@@ -38,7 +38,7 @@ body { background: #292a2d; color: #f1f3f4; }
 }
 
 #zoom { width: 38px; }
-#step { width: 36px; text-align: center; }
+#step { width: 46px; color: #f1f3f4; text-align: center; }
 
 input:focus-visible { outline: 2px solid #8ab4f8 !important; outline-offset: 2px; }
 input:disabled { opacity: .55; }
@@ -90,8 +90,6 @@ button:focus-visible { outline: 2px solid #8ab4f8; outline-offset: 2px; }
   min-height: 24px;
   color: #bdc1c6;
 }
-
-.step-value { display: flex; align-items: center; color: #f1f3f4; }
 
 #status {
   padding: 0 10px 8px;

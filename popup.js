@@ -78,13 +78,13 @@ stepField.addEventListener('change', () => enqueue(async () => {
   const step = parseNumber(stepField.value, 0.01, MAX_STEP, 'step');
   await chrome.storage.local.set({ zoomStep: step });
   zoomStep = step;
-  stepField.value = format(step);
+  stepField.value = `${format(step)}%`;
   showStatus('');
 }));
 stepField.addEventListener('keydown', event => {
   if (event.key === 'Enter') stepField.blur();
   if (event.key === 'Escape') {
-    stepField.value = format(zoomStep);
+    stepField.value = `${format(zoomStep)}%`;
     stepField.blur();
   }
 });
@@ -118,7 +118,7 @@ async function initialize() {
     defaultPercent = (settings.defaultZoomFactor ?? 1) * 100;
     const saved = stored.zoomStep;
     if (Number.isFinite(saved) && saved >= 0.01 && saved <= MAX_STEP) zoomStep = saved;
-    stepField.value = format(zoomStep);
+    stepField.value = `${format(zoomStep)}%`;
     field.disabled = false;
     stepField.disabled = false;
     display(zoomPercent);
