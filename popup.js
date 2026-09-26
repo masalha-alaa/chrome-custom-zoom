@@ -1,19 +1,20 @@
-// Chrome's built-in zoom steps. Exact percentages can also be entered directly.
-const PRESETS = [25, 100 / 3, 50, 200 / 3, 75, 80, 90, 100, 110,
-  125, 150, 175, 200, 250, 300, 400, 500];
 const MIN = 25;
 const MAX = 500;
+const DEFAULT_STEP = 5;
+const MAX_STEP = MAX - MIN;
 
 const field = document.getElementById('zoom');
+const stepField = document.getElementById('step');
 const decrease = document.getElementById('decrease');
 const increase = document.getElementById('increase');
 const reset = document.getElementById('reset');
 const status = document.getElementById('status');
-const controls = [field, decrease, increase, reset];
+const controls = [field, stepField, decrease, increase, reset];
 
 let tabId;
 let zoomPercent;
 let defaultPercent = 100;
+let zoomStep = DEFAULT_STEP;
 let pending = Promise.resolve();
 
 function showStatus(message) {
@@ -21,26 +22,28 @@ function showStatus(message) {
   status.hidden = !message;
 }
 
+function format(percent) {
+  return String(Number(percent.toFixed(2)));
+}
+
 function display(percent) {
   // Avoid displaying floating-point noise from Chrome's zoom API.
-  if (Math.abs(percent - 100 / 3) < 0.0001) field.value = '33';
-  else if (Math.abs(percent - 200 / 3) < 0.0001) field.value = '67';
-  else field.value = String(Number(percent.toFixed(2)));
+  field.value = format(percent);
   decrease.disabled = percent <= MIN + 0.0001;
   increase.disabled = percent >= MAX - 0.0001;
   reset.disabled = Math.abs(percent - defaultPercent) < 0.0001;
 }
 
-function parsePercent() {
-  const raw = field.value.trim().replace(/%$/, '').trim();
+function parseNumber(value, min, max, label) {
+  const raw = value.trim().replace(/%$/, '').trim();
   if (!/^\d+(?:\.\d{1,2})?$/.test(raw)) {
-    throw new Error('Enter a number from 25% to 500% (up to 2 decimals).');
+    throw new Error(`Enter a ${label} from ${min}% to ${max}% (up to 2 decimals).`);
   }
-  const percent = Number(raw);
-  if (percent < MIN || percent > MAX) {
-    throw new Error('Enter a number from 25% to 500%.');
+  const number = Number(raw);
+  if (number < min || number > max) {
+    throw new Error(`Enter a ${label} from ${min}% to ${max}%.`);
   }
-  return percent;
+  return number;
 }
 
 function enqueue(action) {
@@ -56,30 +59,43 @@ async function setPercent(percent) {
   display(zoomPercent);
 }
 
-function nextPreset(direction) {
-  const epsilon = 0.0001;
-  const next = direction > 0
-    ? PRESETS.find(value => value > zoomPercent + epsilon)
-    : PRESETS.findLast(value => value < zoomPercent - epsilon);
-  return next ?? zoomPercent;
-}
-
 field.addEventListener('focus', () => field.select());
 field.addEventListener('change', () => enqueue(async () => {
-  const percent = parsePercent();
+  const percent = parseNumber(field.value, MIN, MAX, 'zoom');
   if (Math.abs(percent - zoomPercent) >= 0.0001) await setPercent(percent);
   else display(zoomPercent);
 }));
 field.addEventListener('keydown', event => {
   if (event.key === 'Enter') field.blur();
   if (event.key === 'Escape') {
-    field.value = String(Number(zoomPercent.toFixed(2)));
+    field.value = format(zoomPercent);
     field.blur();
   }
 });
 
-decrease.addEventListener('click', () => enqueue(() => setPercent(nextPreset(-1))));
-increase.addEventListener('click', () => enqueue(() => setPercent(nextPreset(1))));
+stepField.addEventListener('focus', () => stepField.select());
+stepField.addEventListener('change', () => enqueue(async () => {
+  const step = parseNumber(stepField.value, 0.01, MAX_STEP, 'step');
+  await chrome.storage.local.set({ zoomStep: step });
+  zoomStep = step;
+  stepField.value = format(step);
+  showStatus('');
+}));
+stepField.addEventListener('keydown', event => {
+  if (event.key === 'Enter') stepField.blur();
+  if (event.key === 'Escape') {
+    stepField.value = format(zoomStep);
+    stepField.blur();
+  }
+});
+
+function stepZoom(direction) {
+  const next = Math.round((zoomPercent + direction * zoomStep) * 100) / 100;
+  return setPercent(Math.max(MIN, Math.min(MAX, next)));
+}
+
+decrease.addEventListener('click', () => enqueue(() => stepZoom(-1)));
+increase.addEventListener('click', () => enqueue(() => stepZoom(1)));
 reset.addEventListener('click', () => enqueue(async () => {
   showStatus('');
   await chrome.tabs.setZoom(tabId, 0);
@@ -93,12 +109,18 @@ async function initialize() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (tab?.id === undefined) throw new Error('No active tab.');
     tabId = tab.id;
-    const [factor, settings] = await Promise.all([
-      chrome.tabs.getZoom(tabId), chrome.tabs.getZoomSettings(tabId)
+    const [factor, settings, stored] = await Promise.all([
+      chrome.tabs.getZoom(tabId),
+      chrome.tabs.getZoomSettings(tabId),
+      chrome.storage.local.get('zoomStep')
     ]);
     zoomPercent = factor * 100;
     defaultPercent = (settings.defaultZoomFactor ?? 1) * 100;
+    const saved = stored.zoomStep;
+    if (Number.isFinite(saved) && saved >= 0.01 && saved <= MAX_STEP) zoomStep = saved;
+    stepField.value = format(zoomStep);
     field.disabled = false;
+    stepField.disabled = false;
     display(zoomPercent);
   } catch (error) {
     showStatus('Zoom is unavailable on this page.');

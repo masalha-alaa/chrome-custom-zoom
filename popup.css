@@ -1,33 +1,31 @@
 :root {
   color-scheme: dark;
-  font: 13px Arial, sans-serif;
+  font: 12px Arial, sans-serif;
 }
 
 * { box-sizing: border-box; }
 
-html, body { margin: 0; width: 286px; }
+html, body { margin: 0; width: 148px; }
 
 body { background: #292a2d; color: #f1f3f4; }
 
 .zoom-control {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 56px;
-  padding: 0 14px 0 16px;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px 10px;
 }
 
 .zoom-value {
   display: flex;
   align-items: center;
-  flex: 1;
-  min-width: 0;
+  justify-content: center;
+  height: 25px;
   font-weight: 500;
 }
 
-#zoom {
-  width: 43px;
-  padding: 4px 0;
+#zoom, #step {
+  padding: 3px 0;
   border: 0;
   border-radius: 3px;
   outline: 0;
@@ -39,27 +37,32 @@ body { background: #292a2d; color: #f1f3f4; }
   font-variant-numeric: tabular-nums;
 }
 
-#zoom:focus-visible { outline: 2px solid #8ab4f8; outline-offset: 2px; }
-#zoom:disabled { opacity: .55; }
+#zoom { width: 38px; }
+#step { width: 36px; }
+
+input:focus-visible { outline: 2px solid #8ab4f8 !important; outline-offset: 2px; }
+input:disabled { opacity: .55; }
 
 button { font: inherit; cursor: pointer; }
 button:disabled { opacity: .45; cursor: default; }
 
+.step-buttons { display: flex; gap: 5px; }
+
 .icon-button {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  flex: 1;
+  height: 27px;
   padding: 0;
   border: 0;
-  border-radius: 50%;
+  border-radius: 14px;
   background: transparent;
   color: #bdc1c6;
 }
 
 .icon-button svg {
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
@@ -69,11 +72,9 @@ button:disabled { opacity: .45; cursor: default; }
 .icon-button:not(:disabled):hover { background: #3c4043; }
 
 .reset-button {
-  height: 36px;
-  min-width: 68px;
-  padding: 0 13px;
+  height: 27px;
   border: 1px solid #708792;
-  border-radius: 20px;
+  border-radius: 15px;
   background: transparent;
   color: #8ab4f8;
   font-weight: 600;
@@ -82,8 +83,18 @@ button:disabled { opacity: .45; cursor: default; }
 .reset-button:not(:disabled):hover { background: #303c48; }
 button:focus-visible { outline: 2px solid #8ab4f8; outline-offset: 2px; }
 
+.step-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 24px;
+  color: #bdc1c6;
+}
+
+.step-value { display: flex; align-items: center; color: #f1f3f4; }
+
 #status {
-  padding: 0 16px 10px;
+  padding: 0 10px 8px;
   color: #f28b82;
-  font-size: 12px;
+  font-size: 11px;
 }
