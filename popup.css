@@ -13,7 +13,7 @@ body { background: #292a2d; color: #f1f3f4; }
   display: flex;
   flex-direction: column;
   gap: 5px;
-  padding: 12px 10px 8px;
+  padding: 20px 10px 8px;
 }
 
 .zoom-value {
