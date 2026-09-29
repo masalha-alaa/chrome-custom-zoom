@@ -10,10 +10,23 @@ html, body { margin: 0; width: 148px; }
 body { background: #292a2d; color: #f1f3f4; }
 
 .zoom-control {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 5px;
-  padding: 46px 10px 8px;
+  padding: 52px 10px 8px;
+}
+
+.popup-title {
+  position: absolute;
+  top: 15px;
+  right: 8px;
+  margin: 0;
+  color: #bdc1c6;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 14px;
+  white-space: nowrap;
 }
 
 .zoom-value {
@@ -46,7 +59,7 @@ input:disabled { opacity: .55; }
 button { font: inherit; cursor: pointer; }
 button:disabled { opacity: .45; cursor: default; }
 
-.step-buttons { display: flex; gap: 5px; margin-top: 17px; }
+.step-buttons { display: flex; gap: 5px; margin-top: 11px; }
 
 .icon-button {
   display: grid;
