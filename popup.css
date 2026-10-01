@@ -23,7 +23,8 @@ body { background: #292a2d; color: #f1f3f4; }
   padding: 52px 10px 8px;
 }
 
-.popup-title {
+.popup-title,
+.preset-title {
   position: absolute;
   top: 15px;
   left: 0;
@@ -35,6 +36,12 @@ body { background: #292a2d; color: #f1f3f4; }
   font-weight: 600;
   line-height: 14px;
   white-space: nowrap;
+}
+
+.preset-title {
+  top: 15px;
+  left: 0;
+  right: 0;
 }
 
 .zoom-value-row {
@@ -142,6 +149,7 @@ button:focus-visible { outline: 2px solid #8ab4f8; outline-offset: 2px; }
 }
 
 .preset-panel {
+  position: relative;
   border-left: 1px solid #3c4043;
   padding: 52px 6px 8px;
 }
