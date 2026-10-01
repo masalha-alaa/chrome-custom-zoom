@@ -13,7 +13,7 @@
         <h1 class="popup-title">Custom Zoom</h1>
         <div class="zoom-value-row">
           <div class="zoom-value">
-            <input id="zoom" type="text" inputmode="decimal" autocomplete="off"
+            <input id="zoom" type="text" inputmode="numeric" autocomplete="off"
               spellcheck="false" aria-label="Zoom percentage" title="Type a percentage and press Enter">
           </div>
           <button id="savePreset" class="star-button current-star" type="button"
@@ -30,8 +30,8 @@
         <button id="reset" class="reset-button" type="button">Reset</button>
         <label class="step-setting" for="step">
           <span>Step</span>
-          <input id="step" type="text" inputmode="decimal" autocomplete="off"
-            spellcheck="false" title="Percentage points per click (0.01–475)">
+          <input id="step" type="text" inputmode="numeric" autocomplete="off"
+            spellcheck="false" title="Percentage points per click (1–475)">
         </label>
       </section>
       <aside class="preset-panel" aria-label="Saved zoom presets">
