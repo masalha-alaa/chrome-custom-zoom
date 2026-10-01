@@ -1,0 +1,19 @@
+Get the page size you want with Chrome Custom Zoom.
+
+Enter an exact zoom percentage, adjust it in steps you choose, or apply a saved preset with one click—all from a compact dark popup.
+
+Features
+• Exact zoom: enter any whole-number percentage from 25% to 500%.
+• Custom steps: choose how many percentage points the − and + buttons change per click. The default is 5.
+• Favorite presets: save up to five zoom levels, automatically sorted from smallest to largest.
+• One-click switching: click a saved percentage to apply it to the current website immediately.
+• Easy preset management: click the star beside the current zoom to save it. Unstar a preset to remove it; its row disappears the next time you open the popup.
+• Reset: return to Chrome's configured default zoom.
+
+Uses Chrome's native page zoom. Under Chrome's normal settings, zoom is remembered for each website and shared by tabs on the same site's origin.
+
+Your step size and presets stay stored locally on your device. No account, ads, analytics, or data sent to the developer. The extension requests only the storage permission and does not read website content or browsing history.
+
+Click the extension icon to begin. Type a percentage and press Enter, use − / +, or pick a preset. Some internal and restricted browser pages do not allow extension-controlled zoom.
+
+Free and open source under the MIT license.
