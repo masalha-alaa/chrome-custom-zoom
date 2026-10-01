@@ -52,7 +52,7 @@ function normalizePresets(value) {
     if (!hasPreset(normalized, percent)) normalized.push(percent);
     if (normalized.length === MAX_PRESETS) break;
   }
-  return normalized;
+  return normalized.sort((a, b) => a - b);
 }
 
 function setStarState(button, saved, percent) {
@@ -125,7 +125,7 @@ async function addPreset(percent) {
     return;
   }
 
-  const next = [...savedPresets, normalized];
+  const next = [...savedPresets, normalized].sort((a, b) => a - b);
   await chrome.storage.local.set({ zoomPresets: next });
   savedPresets = next;
 
@@ -133,6 +133,7 @@ async function addPreset(percent) {
     showStatus('');
   } else if (visiblePresets.length < MAX_PRESETS) {
     visiblePresets.push(normalized);
+    visiblePresets.sort((a, b) => a - b);
     showStatus('');
   } else {
     showStatus('Preset saved. Reopen the popup to refresh the list.');
