@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Chrome Custom Zoom",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Set an exact page zoom percentage using a compact Chrome-style control.",
   "permissions": ["storage"],
   "icons": {
