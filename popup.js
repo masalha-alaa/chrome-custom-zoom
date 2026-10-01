@@ -89,8 +89,8 @@ function display(percent) {
 
 function parseNumber(value, min, max, label) {
   const raw = value.trim().replace(/%$/, '').trim();
-  if (!/^\d+(?:\.\d{1,2})?$/.test(raw)) {
-    throw new Error('Enter a ' + label + ' from ' + min + '% to ' + max + '% (up to 2 decimals).');
+  if (!/^\d+$/.test(raw)) {
+    throw new Error('Enter a whole-number ' + label + ' from ' + min + '% to ' + max + '%.');
   }
   const number = Number(raw);
   if (number < min || number > max) {
@@ -199,7 +199,7 @@ field.addEventListener('keydown', event => {
 
 stepField.addEventListener('focus', () => stepField.select());
 stepField.addEventListener('change', () => enqueue(async () => {
-  const step = parseNumber(stepField.value, 0.01, MAX_STEP, 'step');
+  const step = parseNumber(stepField.value, 1, MAX_STEP, 'step');
   await chrome.storage.local.set({ zoomStep: step });
   zoomStep = step;
   stepField.value = format(step) + '%';
@@ -245,7 +245,7 @@ async function initialize() {
     defaultPercent = (settings.defaultZoomFactor ?? 1) * 100;
 
     const savedStep = stored.zoomStep;
-    if (Number.isFinite(savedStep) && savedStep >= 0.01 && savedStep <= MAX_STEP) zoomStep = savedStep;
+    if (Number.isInteger(savedStep) && savedStep >= 1 && savedStep <= MAX_STEP) zoomStep = savedStep;
 
     savedPresets = normalizePresets(stored.zoomPresets);
     visiblePresets = [...savedPresets];
