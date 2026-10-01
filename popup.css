@@ -5,9 +5,15 @@
 
 * { box-sizing: border-box; }
 
-html, body { margin: 0; width: 148px; }
+html, body { margin: 0; width: 238px; }
 
 body { background: #292a2d; color: #f1f3f4; }
+
+.popup-shell {
+  display: grid;
+  grid-template-columns: 148px 90px;
+  min-height: 198px;
+}
 
 .zoom-control {
   position: relative;
@@ -29,6 +35,11 @@ body { background: #292a2d; color: #f1f3f4; }
   font-weight: 600;
   line-height: 14px;
   white-space: nowrap;
+}
+
+.zoom-value-row {
+  position: relative;
+  height: 25px;
 }
 
 .zoom-value {
@@ -60,6 +71,30 @@ input:disabled { opacity: .55; }
 
 button { font: inherit; cursor: pointer; }
 button:disabled { opacity: .45; cursor: default; }
+
+.star-button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #bdc1c6;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.star-button.is-saved { color: #f1f3f4; }
+.star-button:not(:disabled):hover { background: #3c4043; }
+
+.current-star {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+}
 
 .step-buttons { display: flex; gap: 5px; margin-top: 11px; }
 
@@ -104,6 +139,42 @@ button:focus-visible { outline: 2px solid #8ab4f8; outline-offset: 2px; }
   justify-content: space-between;
   min-height: 24px;
   color: #bdc1c6;
+}
+
+.preset-panel {
+  border-left: 1px solid #3c4043;
+  padding: 52px 6px 8px;
+}
+
+.preset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.preset-row {
+  display: flex;
+  align-items: center;
+  height: 24px;
+}
+
+.preset-value {
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+  padding: 0 3px 0 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #f1f3f4;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.preset-value:hover { background: #3c4043; }
+
+.preset-star {
+  flex: 0 0 24px;
 }
 
 #status {
