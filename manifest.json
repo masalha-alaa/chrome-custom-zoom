@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Chrome Custom Zoom",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Set exact page zoom, choose your own zoom step, and save presets in a compact popup.",
   "permissions": [
     "storage"
