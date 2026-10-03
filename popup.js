@@ -5,6 +5,11 @@ const MAX_STEP = MAX - MIN;
 const MAX_PRESETS = 5;
 const PRESET_EPSILON = 0.005;
 
+const DEFAULT_FONT_MIN = 9;
+const DEFAULT_FONT_MAX = 72;
+const MINIMUM_FONT_MIN = 0;
+const MINIMUM_FONT_MAX = 24;
+
 const field = document.getElementById('zoom');
 const stepField = document.getElementById('step');
 const decrease = document.getElementById('decrease');
@@ -12,8 +17,15 @@ const increase = document.getElementById('increase');
 const reset = document.getElementById('reset');
 const savePreset = document.getElementById('savePreset');
 const presetList = document.getElementById('presetList');
+
+const defaultFontField = document.getElementById('defaultFont');
+const minimumFontField = document.getElementById('minimumFont');
+const resetFonts = document.getElementById('resetFonts');
+const fontAdjustButtons = [...document.querySelectorAll('.font-icon-button')];
+
 const status = document.getElementById('status');
-const controls = [field, stepField, decrease, increase, reset, savePreset];
+const zoomControls = [field, stepField, decrease, increase, reset, savePreset];
+const fontControls = [defaultFontField, minimumFontField, resetFonts, ...fontAdjustButtons];
 
 let tabId;
 let zoomPercent;
@@ -21,6 +33,12 @@ let defaultPercent = 100;
 let zoomStep = DEFAULT_STEP;
 let savedPresets = [];
 let visiblePresets = [];
+
+let defaultFontSize;
+let minimumFontSize;
+let defaultFontLevel;
+let minimumFontLevel;
+
 let pending = Promise.resolve();
 
 function showStatus(message) {
@@ -79,7 +97,6 @@ function updateCurrentPresetStar() {
 }
 
 function display(percent) {
-  // Avoid displaying floating-point noise from Chrome's zoom API.
   field.value = format(percent) + '%';
   decrease.disabled = percent <= MIN + 0.0001;
   increase.disabled = percent >= MAX - 0.0001;
@@ -99,10 +116,10 @@ function parseNumber(value, min, max, label) {
   return number;
 }
 
-function enqueue(action) {
+function enqueue(action, failureMessage = 'Could not change zoom on this page.') {
   pending = pending.then(action).catch(error => {
     console.error(error);
-    showStatus('Could not change zoom on this page.');
+    showStatus(error?.message || failureMessage);
   });
 }
 
@@ -229,8 +246,163 @@ reset.addEventListener('click', () => enqueue(async () => {
 }));
 savePreset.addEventListener('click', () => enqueue(() => addPreset(zoomPercent)));
 
-async function initialize() {
-  controls.forEach(control => { control.disabled = true; });
+function canControlFont(level) {
+  return level === 'controllable_by_this_extension' ||
+    level === 'controlled_by_this_extension';
+}
+
+function ownsFontSetting(level) {
+  return level === 'controlled_by_this_extension';
+}
+
+function formatPixels(size) {
+  return size + ' px';
+}
+
+function parsePixelSize(value, min, max, label) {
+  const raw = value.trim().replace(/px$/i, '').trim();
+  if (!/^\d+$/.test(raw)) {
+    throw new Error('Enter a whole-number ' + label + ' from ' + min + ' px to ' + max + ' px.');
+  }
+
+  const number = Number(raw);
+  if (number < min || number > max) {
+    throw new Error('Enter a ' + label + ' from ' + min + ' px to ' + max + ' px.');
+  }
+  return number;
+}
+
+function displayFontSettings() {
+  if (!Number.isInteger(defaultFontSize) || !Number.isInteger(minimumFontSize)) return;
+
+  defaultFontField.value = formatPixels(defaultFontSize);
+  minimumFontField.value = formatPixels(minimumFontSize);
+
+  defaultFontField.disabled = !canControlFont(defaultFontLevel);
+  minimumFontField.disabled = !canControlFont(minimumFontLevel);
+
+  for (const button of fontAdjustButtons) {
+    const isDefault = button.dataset.target === 'defaultFont';
+    const size = isDefault ? defaultFontSize : minimumFontSize;
+    const level = isDefault ? defaultFontLevel : minimumFontLevel;
+    const min = isDefault ? DEFAULT_FONT_MIN : MINIMUM_FONT_MIN;
+    const max = isDefault ? DEFAULT_FONT_MAX : MINIMUM_FONT_MAX;
+    const delta = Number(button.dataset.delta);
+
+    button.disabled = !canControlFont(level) ||
+      (delta < 0 && size <= min) ||
+      (delta > 0 && size >= max);
+  }
+
+  resetFonts.disabled =
+    !ownsFontSetting(defaultFontLevel) &&
+    !ownsFontSetting(minimumFontLevel);
+}
+
+async function refreshFontSettings() {
+  const [defaultDetails, minimumDetails] = await Promise.all([
+    chrome.fontSettings.getDefaultFontSize(),
+    chrome.fontSettings.getMinimumFontSize()
+  ]);
+
+  defaultFontSize = defaultDetails.pixelSize;
+  minimumFontSize = minimumDetails.pixelSize;
+  defaultFontLevel = defaultDetails.levelOfControl;
+  minimumFontLevel = minimumDetails.levelOfControl;
+  displayFontSettings();
+}
+
+async function setGlobalFontSize(kind, pixelSize) {
+  showStatus('');
+
+  if (kind === 'default') {
+    await chrome.fontSettings.setDefaultFontSize({ pixelSize });
+  } else {
+    await chrome.fontSettings.setMinimumFontSize({ pixelSize });
+  }
+
+  await refreshFontSettings();
+}
+
+async function resetGlobalFontSizes() {
+  showStatus('');
+  await Promise.all([
+    chrome.fontSettings.clearDefaultFontSize(),
+    chrome.fontSettings.clearMinimumFontSize()
+  ]);
+  await refreshFontSettings();
+}
+
+function bindFontField(field, kind, min, max, label) {
+  field.addEventListener('focus', () => field.select());
+
+  field.addEventListener('change', () => enqueue(async () => {
+    const value = parsePixelSize(field.value, min, max, label);
+    const current = kind === 'default' ? defaultFontSize : minimumFontSize;
+
+    if (value !== current) await setGlobalFontSize(kind, value);
+    else displayFontSettings();
+  }, 'Could not change global font size.'));
+
+  field.addEventListener('keydown', event => {
+    if (event.key === 'Enter') field.blur();
+    if (event.key === 'Escape') {
+      const current = kind === 'default' ? defaultFontSize : minimumFontSize;
+      field.value = formatPixels(current);
+      field.blur();
+    }
+  });
+}
+
+bindFontField(
+  defaultFontField,
+  'default',
+  DEFAULT_FONT_MIN,
+  DEFAULT_FONT_MAX,
+  'default font size'
+);
+
+bindFontField(
+  minimumFontField,
+  'minimum',
+  MINIMUM_FONT_MIN,
+  MINIMUM_FONT_MAX,
+  'minimum font size'
+);
+
+for (const button of fontAdjustButtons) {
+  button.addEventListener('click', () => enqueue(async () => {
+    const isDefault = button.dataset.target === 'defaultFont';
+    const kind = isDefault ? 'default' : 'minimum';
+    const current = isDefault ? defaultFontSize : minimumFontSize;
+    const min = isDefault ? DEFAULT_FONT_MIN : MINIMUM_FONT_MIN;
+    const max = isDefault ? DEFAULT_FONT_MAX : MINIMUM_FONT_MAX;
+    const delta = Number(button.dataset.delta);
+    const next = Math.max(min, Math.min(max, current + delta));
+
+    if (next !== current) await setGlobalFontSize(kind, next);
+  }, 'Could not change global font size.'));
+}
+
+resetFonts.addEventListener('click', () =>
+  enqueue(resetGlobalFontSizes, 'Could not reset global font size.')
+);
+
+chrome.fontSettings.onDefaultFontSizeChanged.addListener(details => {
+  defaultFontSize = details.pixelSize;
+  defaultFontLevel = details.levelOfControl;
+  displayFontSettings();
+});
+
+chrome.fontSettings.onMinimumFontSizeChanged.addListener(details => {
+  minimumFontSize = details.pixelSize;
+  minimumFontLevel = details.levelOfControl;
+  displayFontSettings();
+});
+
+async function initializeZoom() {
+  zoomControls.forEach(control => { control.disabled = true; });
+
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (tab?.id === undefined) throw new Error('No active tab.');
@@ -246,7 +418,9 @@ async function initialize() {
     defaultPercent = (settings.defaultZoomFactor ?? 1) * 100;
 
     const savedStep = stored.zoomStep;
-    if (Number.isInteger(savedStep) && savedStep >= 1 && savedStep <= MAX_STEP) zoomStep = savedStep;
+    if (Number.isInteger(savedStep) && savedStep >= 1 && savedStep <= MAX_STEP) {
+      zoomStep = savedStep;
+    }
 
     savedPresets = normalizePresets(stored.zoomPresets);
     visiblePresets = [...savedPresets];
@@ -258,8 +432,21 @@ async function initialize() {
     display(zoomPercent);
     renderPresets();
   } catch (error) {
+    console.error(error);
     showStatus('Zoom is unavailable on this page.');
   }
 }
 
-initialize();
+async function initializeFonts() {
+  fontControls.forEach(control => { control.disabled = true; });
+
+  try {
+    await refreshFontSettings();
+  } catch (error) {
+    console.error(error);
+    showStatus('Global font size settings are unavailable.');
+  }
+}
+
+initializeZoom();
+initializeFonts();
