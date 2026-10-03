@@ -9,6 +9,8 @@ const DEFAULT_FONT_MIN = 9;
 const DEFAULT_FONT_MAX = 72;
 const MINIMUM_FONT_MIN = 0;
 const MINIMUM_FONT_MAX = 24;
+const POPUP_BASE_WIDTH = 238;
+const POPUP_PREVIEW_MAX_FONT = 18;
 
 const field = document.getElementById('zoom');
 const stepField = document.getElementById('step');
@@ -276,8 +278,20 @@ function parsePixelSize(value, min, max, label) {
   return number;
 }
 
+function updatePopupPreviewScale() {
+  const scale = minimumFontSize > POPUP_PREVIEW_MAX_FONT
+    ? POPUP_PREVIEW_MAX_FONT / minimumFontSize
+    : 1;
+
+  const layoutWidth = POPUP_BASE_WIDTH / scale;
+  document.documentElement.style.setProperty('--popup-ui-scale', String(scale));
+  document.documentElement.style.setProperty('--popup-layout-width', layoutWidth + 'px');
+}
+
 function displayFontSettings() {
   if (!Number.isInteger(defaultFontSize) || !Number.isInteger(minimumFontSize)) return;
+
+  updatePopupPreviewScale();
 
   defaultFontField.value = formatPixels(defaultFontSize);
   minimumFontField.value = formatPixels(minimumFontSize);
