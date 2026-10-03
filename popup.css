@@ -200,8 +200,63 @@ button:focus-visible { outline: 2px solid #8ab4f8; outline-offset: 2px; }
   width: calc(100% - 14px);
 }
 
-.font-title {
+.font-title-row {
+  position: relative;
+  height: 14px;
   margin-bottom: 23px;
+}
+
+.font-title {
+  margin: 0;
+}
+
+.font-toggle {
+  position: absolute;
+  top: -2px;
+  right: -19px;
+  width: 32px;
+  height: 18px;
+}
+
+.font-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.font-toggle-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  background: #5f6368;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.font-toggle-track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #e8eaed;
+  transition: transform 120ms ease;
+}
+
+.font-toggle input:checked + .font-toggle-track {
+  background: #8ab4f8;
+}
+
+.font-toggle input:checked + .font-toggle-track::after {
+  transform: translateX(14px);
+  background: #202124;
+}
+
+.font-toggle input:focus-visible + .font-toggle-track {
+  outline: 2px solid #8ab4f8;
+  outline-offset: 2px;
 }
 
 .font-row {
@@ -209,6 +264,7 @@ button:focus-visible { outline: 2px solid #8ab4f8; outline-offset: 2px; }
   align-items: center;
   justify-content: space-between;
   min-height: 30px;
+  transition: opacity 120ms ease;
 }
 
 .font-controls {
@@ -257,6 +313,7 @@ button:focus-visible { outline: 2px solid #8ab4f8; outline-offset: 2px; }
   display: flex;
   justify-content: center;
   margin-top: 7px;
+  transition: opacity 120ms ease;
 }
 
 .font-reset {
@@ -270,6 +327,23 @@ button:focus-visible { outline: 2px solid #8ab4f8; outline-offset: 2px; }
 }
 
 .font-reset:not(:disabled):hover { background: #303c48; }
+
+.font-row.is-disabled,
+.font-footer.is-disabled {
+  opacity: .45;
+}
+
+.font-row.is-disabled button:disabled,
+.font-row.is-disabled input:disabled,
+.font-footer.is-disabled button:disabled {
+  opacity: 1;
+}
+
+.font-row button:disabled,
+.font-row input:disabled,
+.font-reset:disabled {
+  cursor: default;
+}
 
 #status {
   padding: 0 10px 8px;
