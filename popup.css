@@ -303,6 +303,7 @@ button:focus-visible { outline: 2px solid #8ab4f8; outline-offset: 2px; }
   background: #202124;
   color: #f1f3f4;
   font: inherit;
+  line-height: 24px;
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
