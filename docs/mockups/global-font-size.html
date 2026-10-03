@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zoom — Font Controls Mockup</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font: 12px Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 238px;
+    }
+
+    body {
+      background: #292a2d;
+      color: #f1f3f4;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid #8ab4f8;
+      outline-offset: 2px;
+    }
+
+    .popup-shell {
+      display: grid;
+      grid-template-columns: 148px 90px;
+      min-height: 198px;
+    }
+
+    .zoom-control {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 52px 10px 8px;
+    }
+
+    .popup-title,
+    .preset-title,
+    .font-title {
+      margin: 0;
+      text-align: center;
+      color: #bdc1c6;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 14px;
+      white-space: nowrap;
+    }
+
+    .popup-title,
+    .preset-title {
+      position: absolute;
+      top: 15px;
+      left: 0;
+      right: 0;
+    }
+
+    .zoom-value-row {
+      position: relative;
+      height: 25px;
+    }
+
+    .zoom-value {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 25px;
+      font-weight: 500;
+    }
+
+    #zoom, #step {
+      padding: 3px 0;
+      border: 0;
+      border-radius: 3px;
+      outline: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: 500;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #zoom {
+      width: 60px;
+      text-align: center;
+    }
+
+    #step {
+      width: 46px;
+      color: #f1f3f4;
+      text-align: right;
+    }
+
+    .star-button {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: #bdc1c6;
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .star-button.is-saved {
+      color: #f1f3f4;
+    }
+
+    .star-button:hover,
+    .icon-button:hover,
+    .font-icon-button:hover,
+    .preset-value:hover {
+      background: #3c4043;
+    }
+
+    .current-star {
+      position: absolute;
+      top: 50%;
+      right: 4px;
+      transform: translateY(-50%);
+    }
+
+    .step-buttons {
+      display: flex;
+      gap: 5px;
+      margin-top: 11px;
+    }
+
+    .icon-button {
+      display: grid;
+      place-items: center;
+      flex: 1;
+      height: 27px;
+      padding: 0;
+      border: 0;
+      border-radius: 14px;
+      background: transparent;
+      color: #bdc1c6;
+    }
+
+    .icon-button svg,
+    .font-icon-button svg {
+      width: 17px;
+      height: 17px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+
+    .reset-button {
+      height: 27px;
+      border: 1px solid #708792;
+      border-radius: 15px;
+      background: transparent;
+      color: #8ab4f8;
+      font-weight: 600;
+    }
+
+    .reset-button:hover {
+      background: #303c48;
+    }
+
+    .step-setting {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 24px;
+      color: #bdc1c6;
+    }
+
+    .preset-panel {
+      position: relative;
+      border-left: 1px solid #3c4043;
+      padding: 52px 6px 8px;
+    }
+
+    .preset-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .preset-row {
+      display: flex;
+      align-items: center;
+      height: 24px;
+    }
+
+    .preset-value {
+      flex: 1;
+      min-width: 0;
+      height: 24px;
+      padding: 0 3px 0 0;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: #f1f3f4;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .preset-star {
+      flex: 0 0 24px;
+    }
+
+    /* Suggested addition */
+    .font-panel {
+      border-top: 1px solid #3c4043;
+      padding: 10px 10px 9px;
+    }
+
+    .font-content {
+      width: calc(100% - 14px);
+    }
+
+    .font-title {
+      margin-bottom: 8px;
+    }
+
+    .font-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 30px;
+    }
+
+    .font-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transform: translateX(19px);
+    }
+
+    .font-label {
+      color: #bdc1c6;
+      white-space: nowrap;
+    }
+
+    .font-icon-button {
+      display: grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      padding: 0;
+      border: 0;
+      border-radius: 13px;
+      background: transparent;
+      color: #bdc1c6;
+    }
+
+    .font-value {
+      width: 62px;
+      height: 26px;
+      padding: 0 5px;
+      border: 1px solid #5f6368;
+      border-radius: 6px;
+      outline: 0;
+      background: #202124;
+      color: #f1f3f4;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .font-value:hover {
+      border-color: #80868b;
+    }
+
+    .font-footer {
+      display: flex;
+      justify-content: center;
+      margin-top: 7px;
+    }
+
+    .font-reset {
+      width: 128px;
+      height: 27px;
+      border: 1px solid #708792;
+      border-radius: 15px;
+      background: transparent;
+      color: #8ab4f8;
+      font-weight: 600;
+    }
+
+    .font-reset:hover {
+      background: #303c48;
+    }
+  </style>
+</head>
+<body>
+  <main aria-label="Custom Zoom mockup">
+    <section class="popup-shell">
+      <section class="zoom-control">
+        <h1 class="popup-title">Zoom</h1>
+
+        <div class="zoom-value-row">
+          <div class="zoom-value">
+            <input id="zoom" type="text" value="120%" aria-label="Zoom percentage">
+          </div>
+          <button id="savePreset" class="star-button current-star" type="button"
+                  aria-label="Save current zoom as preset" aria-pressed="false">☆</button>
+        </div>
+
+        <div class="step-buttons">
+          <button id="decrease" class="icon-button" type="button" aria-label="Zoom out">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12"/></svg>
+          </button>
+          <button id="increase" class="icon-button" type="button" aria-label="Zoom in">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12M10 4v12"/></svg>
+          </button>
+        </div>
+
+        <button id="reset" class="reset-button" type="button">Reset</button>
+
+        <label class="step-setting" for="step">
+          <span>Step</span>
+          <input id="step" type="text" value="5%">
+        </label>
+      </section>
+
+      <aside class="preset-panel" aria-label="Saved zoom presets">
+        <h2 class="preset-title">Presets</h2>
+        <div id="presetList" class="preset-list">
+          <div class="preset-row">
+            <button class="preset-value" type="button">80%</button>
+            <button class="star-button preset-star is-saved" type="button">★</button>
+          </div>
+          <div class="preset-row">
+            <button class="preset-value" type="button">100%</button>
+            <button class="star-button preset-star is-saved" type="button">★</button>
+          </div>
+          <div class="preset-row">
+            <button class="preset-value" type="button">120%</button>
+            <button class="star-button preset-star is-saved" type="button">★</button>
+          </div>
+          <div class="preset-row">
+            <button class="preset-value" type="button">150%</button>
+            <button class="star-button preset-star is-saved" type="button">★</button>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="font-panel" aria-label="Font size controls">
+      <div class="font-content">
+        <h2 class="font-title">Global Font Size</h2>
+
+        <div class="font-row">
+          <span class="font-label" title="Default font size used by Chrome">Default</span>
+          <div class="font-controls">
+            <button class="font-icon-button" type="button" data-target="defaultFont" data-delta="-1" aria-label="Decrease default font size">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12"/></svg>
+            </button>
+            <input id="defaultFont" class="font-value" type="text" value="16 px" aria-label="Default font size">
+            <button class="font-icon-button" type="button" data-target="defaultFont" data-delta="1" aria-label="Increase default font size">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12M10 4v12"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="font-row">
+          <span class="font-label" title="Minimum font size Chrome will allow on webpages">Minimum</span>
+          <div class="font-controls">
+            <button class="font-icon-button" type="button" data-target="minimumFont" data-delta="-1" aria-label="Decrease minimum font size">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12"/></svg>
+            </button>
+            <input id="minimumFont" class="font-value" type="text" value="0 px" aria-label="Minimum font size">
+            <button class="font-icon-button" type="button" data-target="minimumFont" data-delta="1" aria-label="Increase minimum font size">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12M10 4v12"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="font-footer">
+          <button id="resetFonts" class="font-reset" type="button">Reset</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const parsePx = value => {
+      const n = parseInt(value, 10);
+      return Number.isFinite(n) ? n : 0;
+    };
+
+    document.querySelectorAll('.font-icon-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const field = document.getElementById(button.dataset.target);
+        const delta = Number(button.dataset.delta);
+        let value = parsePx(field.value) + delta;
+
+        if (field.id === 'minimumFont') value = Math.max(0, value);
+        else value = Math.max(1, value);
+
+        field.value = value + ' px';
+      });
+    });
+
+    document.querySelectorAll('.font-value').forEach(field => {
+      field.addEventListener('focus', () => field.select());
+      field.addEventListener('blur', () => {
+        let value = parsePx(field.value);
+        if (field.id === 'minimumFont') value = Math.max(0, value);
+        else value = Math.max(1, value);
+        field.value = value + ' px';
+      });
+    });
+
+    document.getElementById('resetFonts').addEventListener('click', () => {
+      document.getElementById('defaultFont').value = '16 px';
+      document.getElementById('minimumFont').value = '0 px';
+    });
+
+    document.querySelectorAll('.preset-star, #savePreset').forEach(button => {
+      button.addEventListener('click', () => {
+        const saved = button.textContent === '★';
+        button.textContent = saved ? '☆' : '★';
+        button.classList.toggle('is-saved', !saved);
+      });
+    });
+
+    document.querySelectorAll('.preset-value').forEach(button => {
+      button.addEventListener('click', () => {
+        document.getElementById('zoom').value = button.textContent;
+      });
+    });
+  </script>
+</body>
+</html>
