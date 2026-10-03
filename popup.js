@@ -21,7 +21,10 @@ const presetList = document.getElementById('presetList');
 const defaultFontField = document.getElementById('defaultFont');
 const minimumFontField = document.getElementById('minimumFont');
 const resetFonts = document.getElementById('resetFonts');
+const fontSizeEnabledToggle = document.getElementById('fontSizeEnabled');
 const fontAdjustButtons = [...document.querySelectorAll('.font-icon-button')];
+const fontRows = [...document.querySelectorAll('.font-row')];
+const fontFooter = document.querySelector('.font-footer');
 
 const status = document.getElementById('status');
 const zoomControls = [field, stepField, decrease, increase, reset, savePreset];
@@ -38,6 +41,7 @@ let defaultFontSize;
 let minimumFontSize;
 let defaultFontLevel;
 let minimumFontLevel;
+let fontSizeEnabled = false;
 
 let pending = Promise.resolve();
 
@@ -277,9 +281,13 @@ function displayFontSettings() {
 
   defaultFontField.value = formatPixels(defaultFontSize);
   minimumFontField.value = formatPixels(minimumFontSize);
+  fontSizeEnabledToggle.checked = fontSizeEnabled;
 
-  defaultFontField.disabled = !canControlFont(defaultFontLevel);
-  minimumFontField.disabled = !canControlFont(minimumFontLevel);
+  const defaultControllable = canControlFont(defaultFontLevel);
+  const minimumControllable = canControlFont(minimumFontLevel);
+
+  defaultFontField.disabled = !fontSizeEnabled || !defaultControllable;
+  minimumFontField.disabled = !fontSizeEnabled || !minimumControllable;
 
   for (const button of fontAdjustButtons) {
     const isDefault = button.dataset.target === 'defaultFont';
@@ -289,14 +297,24 @@ function displayFontSettings() {
     const max = isDefault ? DEFAULT_FONT_MAX : MINIMUM_FONT_MAX;
     const delta = Number(button.dataset.delta);
 
-    button.disabled = !canControlFont(level) ||
+    button.disabled = !fontSizeEnabled ||
+      !canControlFont(level) ||
       (delta < 0 && size <= min) ||
       (delta > 0 && size >= max);
   }
 
   resetFonts.disabled =
-    !ownsFontSetting(defaultFontLevel) &&
-    !ownsFontSetting(minimumFontLevel);
+    !fontSizeEnabled ||
+    !defaultControllable ||
+    !minimumControllable;
+
+  fontSizeEnabledToggle.disabled =
+    !fontSizeEnabled &&
+    (!defaultControllable || !minimumControllable);
+
+  fontRows[0].classList.toggle('is-disabled', defaultFontField.disabled);
+  fontRows[1].classList.toggle('is-disabled', minimumFontField.disabled);
+  fontFooter.classList.toggle('is-disabled', resetFonts.disabled);
 }
 
 async function refreshFontSettings() {
@@ -326,10 +344,30 @@ async function setGlobalFontSize(kind, pixelSize) {
 
 async function resetGlobalFontSizes() {
   showStatus('');
+
   await Promise.all([
     chrome.fontSettings.clearDefaultFontSize(),
     chrome.fontSettings.clearMinimumFontSize()
   ]);
+
+  const [defaultDetails, minimumDetails] = await Promise.all([
+    chrome.fontSettings.getDefaultFontSize(),
+    chrome.fontSettings.getMinimumFontSize()
+  ]);
+
+  if (!canControlFont(defaultDetails.levelOfControl) ||
+      !canControlFont(minimumDetails.levelOfControl)) {
+    fontSizeEnabled = false;
+    await chrome.storage.local.set({ fontSizeEnabled: false });
+    await refreshFontSettings();
+    return;
+  }
+
+  await Promise.all([
+    chrome.fontSettings.setDefaultFontSize({ pixelSize: defaultDetails.pixelSize }),
+    chrome.fontSettings.setMinimumFontSize({ pixelSize: minimumDetails.pixelSize })
+  ]);
+
   await refreshFontSettings();
 }
 
@@ -388,6 +426,58 @@ resetFonts.addEventListener('click', () =>
   enqueue(resetGlobalFontSizes, 'Could not reset global font size.')
 );
 
+fontSizeEnabledToggle.addEventListener('change', () =>
+  enqueue(async () => {
+    const enable = fontSizeEnabledToggle.checked;
+    fontSizeEnabledToggle.disabled = true;
+
+    try {
+      if (enable) {
+        const [defaultDetails, minimumDetails] = await Promise.all([
+          chrome.fontSettings.getDefaultFontSize(),
+          chrome.fontSettings.getMinimumFontSize()
+        ]);
+
+        if (!canControlFont(defaultDetails.levelOfControl) ||
+            !canControlFont(minimumDetails.levelOfControl)) {
+          throw new Error('Global font size cannot be controlled.');
+        }
+
+        try {
+          await Promise.all([
+            chrome.fontSettings.setDefaultFontSize({ pixelSize: defaultDetails.pixelSize }),
+            chrome.fontSettings.setMinimumFontSize({ pixelSize: minimumDetails.pixelSize })
+          ]);
+        } catch (error) {
+          await Promise.allSettled([
+            chrome.fontSettings.clearDefaultFontSize(),
+            chrome.fontSettings.clearMinimumFontSize()
+          ]);
+          throw error;
+        }
+
+        fontSizeEnabled = true;
+        await chrome.storage.local.set({ fontSizeEnabled: true });
+      } else {
+        await Promise.all([
+          chrome.fontSettings.clearDefaultFontSize(),
+          chrome.fontSettings.clearMinimumFontSize()
+        ]);
+
+        fontSizeEnabled = false;
+        await chrome.storage.local.set({ fontSizeEnabled: false });
+      }
+
+      showStatus('');
+      await refreshFontSettings();
+    } catch (error) {
+      fontSizeEnabledToggle.checked = fontSizeEnabled;
+      await refreshFontSettings();
+      throw error;
+    }
+  }, 'Could not change global font size control.')
+);
+
 chrome.fontSettings.onDefaultFontSizeChanged.addListener(details => {
   defaultFontSize = details.pixelSize;
   defaultFontLevel = details.levelOfControl;
@@ -439,8 +529,43 @@ async function initializeZoom() {
 
 async function initializeFonts() {
   fontControls.forEach(control => { control.disabled = true; });
+  fontSizeEnabledToggle.disabled = true;
 
   try {
+    const stored = await chrome.storage.local.get('fontSizeEnabled');
+    fontSizeEnabled = stored.fontSizeEnabled === true;
+
+    if (!fontSizeEnabled) {
+      await Promise.all([
+        chrome.fontSettings.clearDefaultFontSize(),
+        chrome.fontSettings.clearMinimumFontSize()
+      ]);
+
+      if (stored.fontSizeEnabled !== false) {
+        await chrome.storage.local.set({ fontSizeEnabled: false });
+      }
+    } else {
+      const [defaultDetails, minimumDetails] = await Promise.all([
+        chrome.fontSettings.getDefaultFontSize(),
+        chrome.fontSettings.getMinimumFontSize()
+      ]);
+
+      const canControlBoth =
+        canControlFont(defaultDetails.levelOfControl) &&
+        canControlFont(minimumDetails.levelOfControl);
+
+      if (!canControlBoth) {
+        fontSizeEnabled = false;
+        await chrome.storage.local.set({ fontSizeEnabled: false });
+      } else if (!ownsFontSetting(defaultDetails.levelOfControl) ||
+                 !ownsFontSetting(minimumDetails.levelOfControl)) {
+        await Promise.all([
+          chrome.fontSettings.setDefaultFontSize({ pixelSize: defaultDetails.pixelSize }),
+          chrome.fontSettings.setMinimumFontSize({ pixelSize: minimumDetails.pixelSize })
+        ]);
+      }
+    }
+
     await refreshFontSettings();
   } catch (error) {
     console.error(error);
