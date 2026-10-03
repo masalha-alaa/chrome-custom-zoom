@@ -98,11 +98,11 @@ button:disabled { opacity: .45; cursor: default; }
 .current-star {
   position: absolute;
   top: 50%;
-  right: 4px;
+  right: -6px;
   transform: translateY(-50%);
 }
 
-.step-buttons { display: flex; gap: 5px; margin-top: 11px; }
+.step-buttons { display: flex; gap: 5px; margin-top: 8.5px; }
 
 .icon-button {
   display: grid;
@@ -138,6 +138,12 @@ button:disabled { opacity: .45; cursor: default; }
 }
 
 .reset-button:not(:disabled):hover { background: #303c48; }
+
+.step-buttons,
+.zoom-control > .reset-button {
+  transform: translateY(-2px);
+}
+
 button:focus-visible { outline: 2px solid #8ab4f8; outline-offset: 2px; }
 
 .step-setting {
