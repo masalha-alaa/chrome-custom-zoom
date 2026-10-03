@@ -21,5 +21,8 @@
       "32": "icons/zoom-32.png"
     }
   },
-  "homepage_url": "https://github.com/masalha-alaa/chrome-custom-zoom"
+  "homepage_url": "https://github.com/masalha-alaa/chrome-custom-zoom",
+  "background": {
+    "service_worker": "background.js"
+  }
 }
