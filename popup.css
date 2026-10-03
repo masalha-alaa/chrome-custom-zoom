@@ -239,6 +239,7 @@ button:focus-visible { outline: 2px solid #8ab4f8; outline-offset: 2px; }
   outline: 0;
   background: #202124;
   color: #f1f3f4;
+  font: inherit;
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
