@@ -1,17 +1,29 @@
 :root {
   color-scheme: dark;
   font: 12px Arial, sans-serif;
+  --popup-ui-scale: 1;
+  --popup-layout-width: 238px;
 }
 
 * { box-sizing: border-box; }
 
 html, body { margin: 0; width: 238px; }
 
-body { background: #292a2d; color: #f1f3f4; }
+body {
+  overflow-x: hidden;
+  background: #292a2d;
+  color: #f1f3f4;
+}
+
+body > main,
+#status {
+  width: var(--popup-layout-width);
+  zoom: var(--popup-ui-scale);
+}
 
 .popup-shell {
   display: grid;
-  grid-template-columns: 148px 90px;
+  grid-template-columns: 62.18487395% 37.81512605%;
   min-height: 198px;
 }
 
