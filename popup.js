@@ -118,8 +118,8 @@ function parseNumber(value, min, max, label) {
 
 function enqueue(action, failureMessage = 'Could not change zoom on this page.') {
   pending = pending.then(action).catch(error => {
-    console.error(error);
-    showStatus(error?.message || failureMessage);
+    console.error(error?.message ?? error);
+    showStatus(failureMessage);
   });
 }
 
