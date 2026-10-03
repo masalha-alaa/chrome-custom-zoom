@@ -8,9 +8,10 @@
     <script src="popup.js" defer></script>
   </head>
   <body>
-    <main class="popup-shell" aria-label="Page zoom">
+    <main aria-label="Custom Zoom">
+      <section class="popup-shell" aria-label="Page zoom">
       <section class="zoom-control">
-        <h1 class="popup-title">Custom Zoom</h1>
+        <h1 class="popup-title">Zoom</h1>
         <div class="zoom-value-row">
           <div class="zoom-value">
             <input id="zoom" type="text" inputmode="numeric" autocomplete="off"
@@ -38,6 +39,45 @@
         <h2 class="preset-title">Presets</h2>
         <div id="presetList" class="preset-list"></div>
       </aside>
+      </section>
+      <section class="font-panel" aria-label="Global font size controls">
+        <div class="font-content">
+          <h2 class="font-title">Global Font Size</h2>
+          <div class="font-row">
+            <span class="font-label" title="Default font size used by Chrome">Default</span>
+            <div class="font-controls">
+              <button class="font-icon-button" type="button" data-target="defaultFont" data-delta="-1"
+                aria-label="Decrease default font size" title="Decrease default font size">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12"/></svg>
+              </button>
+              <input id="defaultFont" class="font-value" type="text" inputmode="numeric" autocomplete="off"
+                spellcheck="false" aria-label="Default font size" title="Default font size (9–72 px)">
+              <button class="font-icon-button" type="button" data-target="defaultFont" data-delta="1"
+                aria-label="Increase default font size" title="Increase default font size">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12M10 4v12"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="font-row">
+            <span class="font-label" title="Minimum font size Chrome will allow on webpages">Minimum</span>
+            <div class="font-controls">
+              <button class="font-icon-button" type="button" data-target="minimumFont" data-delta="-1"
+                aria-label="Decrease minimum font size" title="Decrease minimum font size">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12"/></svg>
+              </button>
+              <input id="minimumFont" class="font-value" type="text" inputmode="numeric" autocomplete="off"
+                spellcheck="false" aria-label="Minimum font size" title="Minimum font size (0–24 px)">
+              <button class="font-icon-button" type="button" data-target="minimumFont" data-delta="1"
+                aria-label="Increase minimum font size" title="Increase minimum font size">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12M10 4v12"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="font-footer">
+            <button id="resetFonts" class="font-reset" type="button">Reset</button>
+          </div>
+        </div>
+      </section>
     </main>
     <div id="status" role="status" aria-live="polite" hidden></div>
   </body>
