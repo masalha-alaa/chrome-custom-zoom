@@ -8,7 +8,7 @@ const PRESET_EPSILON = 0.005;
 const DEFAULT_FONT_MIN = 9;
 const DEFAULT_FONT_MAX = 72;
 const MINIMUM_FONT_MIN = 0;
-const MINIMUM_FONT_MAX = 24;
+const MINIMUM_FONT_MAX = 18;
 
 const field = document.getElementById('zoom');
 const stepField = document.getElementById('step');
