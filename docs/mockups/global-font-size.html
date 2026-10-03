@@ -135,14 +135,14 @@
     .current-star {
       position: absolute;
       top: 50%;
-      right: 4px;
+      right: -6px;
       transform: translateY(-50%);
     }
 
     .step-buttons {
       display: flex;
       gap: 5px;
-      margin-top: 11px;
+      margin-top: 8.5px;
     }
 
     .icon-button {
@@ -178,6 +178,11 @@
 
     .reset-button:hover {
       background: #303c48;
+    }
+
+    .step-buttons,
+    .zoom-control > .reset-button {
+      transform: translateY(-2px);
     }
 
     .step-setting {
@@ -223,7 +228,6 @@
       flex: 0 0 24px;
     }
 
-    /* Suggested addition */
     .font-panel {
       border-top: 1px solid #3c4043;
       padding: 10px 10px 9px;
@@ -354,6 +358,10 @@
           </div>
           <div class="preset-row">
             <button class="preset-value" type="button">150%</button>
+            <button class="star-button preset-star is-saved" type="button">★</button>
+          </div>
+          <div class="preset-row">
+            <button class="preset-value" type="button">175%</button>
             <button class="star-button preset-star is-saved" type="button">★</button>
           </div>
         </div>
