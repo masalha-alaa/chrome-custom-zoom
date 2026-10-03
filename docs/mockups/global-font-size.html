@@ -237,8 +237,63 @@
       width: calc(100% - 14px);
     }
 
-    .font-title {
+    .font-title-row {
+      position: relative;
+      height: 14px;
       margin-bottom: 23px;
+    }
+
+    .font-title {
+      margin: 0;
+    }
+
+    .font-toggle {
+      position: absolute;
+      top: -2px;
+      right: -19px;
+      width: 32px;
+      height: 18px;
+    }
+
+    .font-toggle input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .font-toggle-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 9px;
+      background: #5f6368;
+      cursor: pointer;
+      transition: background 120ms ease;
+    }
+
+    .font-toggle-track::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #e8eaed;
+      transition: transform 120ms ease;
+    }
+
+    .font-toggle input:checked + .font-toggle-track {
+      background: #8ab4f8;
+    }
+
+    .font-toggle input:checked + .font-toggle-track::after {
+      transform: translateX(14px);
+      background: #202124;
+    }
+
+    .font-toggle input:focus-visible + .font-toggle-track {
+      outline: 2px solid #8ab4f8;
+      outline-offset: 2px;
     }
 
     .font-row {
@@ -246,6 +301,7 @@
       align-items: center;
       justify-content: space-between;
       min-height: 30px;
+      transition: opacity 120ms ease;
     }
 
     .font-controls {
@@ -293,6 +349,7 @@
       display: flex;
       justify-content: center;
       margin-top: 7px;
+      transition: opacity 120ms ease;
     }
 
     .font-reset {
@@ -307,6 +364,17 @@
 
     .font-reset:hover {
       background: #303c48;
+    }
+
+    .font-row.is-disabled,
+    .font-footer.is-disabled {
+      opacity: .45;
+    }
+
+    .font-row button:disabled,
+    .font-row input:disabled,
+    .font-reset:disabled {
+      cursor: default;
     }
   </style>
 </head>
@@ -370,7 +438,13 @@
 
     <section class="font-panel" aria-label="Font size controls">
       <div class="font-content">
-        <h2 class="font-title">Global Font Size</h2>
+        <div class="font-title-row">
+          <h2 class="font-title">Global Font Size</h2>
+          <label class="font-toggle" title="Enable or disable extension control of Chrome's global font size">
+            <input id="fontSizeEnabled" type="checkbox" aria-label="Enable global font size control">
+            <span class="font-toggle-track" aria-hidden="true"></span>
+          </label>
+        </div>
 
         <div class="font-row">
           <span class="font-label" title="Default font size used by Chrome">Default</span>
@@ -438,6 +512,21 @@
       document.getElementById('defaultFont').value = '16 px';
       document.getElementById('minimumFont').value = '0 px';
     });
+
+    const fontSizeEnabled = document.getElementById('fontSizeEnabled');
+    const fontRows = [...document.querySelectorAll('.font-row')];
+    const fontFooter = document.querySelector('.font-footer');
+    const fontControls = [...document.querySelectorAll('.font-row button, .font-row input, #resetFonts')];
+
+    function updateFontToggleState() {
+      const enabled = fontSizeEnabled.checked;
+      fontControls.forEach(control => { control.disabled = !enabled; });
+      fontRows.forEach(row => row.classList.toggle('is-disabled', !enabled));
+      fontFooter.classList.toggle('is-disabled', !enabled);
+    }
+
+    fontSizeEnabled.addEventListener('change', updateFontToggleState);
+    updateFontToggleState();
 
     document.querySelectorAll('.preset-star, #savePreset').forEach(button => {
       button.addEventListener('click', () => {
