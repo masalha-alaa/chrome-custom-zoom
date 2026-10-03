@@ -24,11 +24,8 @@ body { background: #292a2d; color: #f1f3f4; }
 }
 
 .popup-title,
-.preset-title {
-  position: absolute;
-  top: 15px;
-  left: 0;
-  right: 0;
+.preset-title,
+.font-title {
   margin: 0;
   text-align: center;
   color: #bdc1c6;
@@ -38,7 +35,9 @@ body { background: #292a2d; color: #f1f3f4; }
   white-space: nowrap;
 }
 
+.popup-title,
 .preset-title {
+  position: absolute;
   top: 15px;
   left: 0;
   right: 0;
@@ -117,7 +116,8 @@ button:disabled { opacity: .45; cursor: default; }
   color: #bdc1c6;
 }
 
-.icon-button svg {
+.icon-button svg,
+.font-icon-button svg {
   width: 17px;
   height: 17px;
   fill: none;
@@ -184,6 +184,84 @@ button:focus-visible { outline: 2px solid #8ab4f8; outline-offset: 2px; }
 .preset-star {
   flex: 0 0 24px;
 }
+
+.font-panel {
+  border-top: 1px solid #3c4043;
+  padding: 10px 10px 9px;
+}
+
+.font-content {
+  width: calc(100% - 14px);
+}
+
+.font-title {
+  margin-bottom: 8px;
+}
+
+.font-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 30px;
+}
+
+.font-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.font-label {
+  color: #bdc1c6;
+  white-space: nowrap;
+}
+
+.font-icon-button {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  color: #bdc1c6;
+}
+
+.font-icon-button:not(:disabled):hover { background: #3c4043; }
+
+.font-value {
+  width: 62px;
+  height: 26px;
+  padding: 0 5px;
+  border: 1px solid #5f6368;
+  border-radius: 6px;
+  outline: 0;
+  background: #202124;
+  color: #f1f3f4;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.font-value:not(:disabled):hover { border-color: #80868b; }
+
+.font-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 7px;
+}
+
+.font-reset {
+  width: 148px;
+  height: 27px;
+  border: 1px solid #708792;
+  border-radius: 15px;
+  background: transparent;
+  color: #8ab4f8;
+  font-weight: 600;
+}
+
+.font-reset:not(:disabled):hover { background: #303c48; }
 
 #status {
   padding: 0 10px 8px;
