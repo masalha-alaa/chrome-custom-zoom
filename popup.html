@@ -42,7 +42,13 @@
       </section>
       <section class="font-panel" aria-label="Global font size controls">
         <div class="font-content">
-          <h2 class="font-title">Global Font Size</h2>
+          <div class="font-title-row">
+            <h2 class="font-title">Global Font Size</h2>
+            <label class="font-toggle" title="Enable or disable extension control of Chrome's global font size">
+              <input id="fontSizeEnabled" type="checkbox" aria-label="Enable global font size control">
+              <span class="font-toggle-track" aria-hidden="true"></span>
+            </label>
+          </div>
           <div class="font-row">
             <span class="font-label" title="Default font size used by Chrome">Default</span>
             <div class="font-controls">
