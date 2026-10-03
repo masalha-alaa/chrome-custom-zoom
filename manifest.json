@@ -1,10 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Chrome Custom Zoom",
-  "version": "1.1.2",
-  "description": "Set exact page zoom, choose your own zoom step, and save presets in a compact popup.",
+  "version": "1.2.0",
+  "description": "Set exact page zoom, choose your own zoom step, save presets, and control Chrome's global font sizes.",
   "permissions": [
-    "storage"
+    "storage",
+    "fontSettings"
   ],
   "icons": {
     "16": "icons/zoom-16.png",
