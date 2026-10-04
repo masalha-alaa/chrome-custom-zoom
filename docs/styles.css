@@ -46,7 +46,22 @@ p { color: var(--muted); }
 .showcase-top { display: flex; justify-content: space-between; align-items: center; padding: 17px 23px; border-bottom: 1px solid #ffffff09; font-size: 10px; letter-spacing: .12em; color: #9bacc6; }
 .showcase-top span:last-child { color: #bbcced; letter-spacing: .02em; padding: 3px 8px; border: 1px solid #a8c6ff23; border-radius: 5px; background: #a8c6ff08; }
 .popup-stage { display: grid; place-items: center; padding: 35px 38px 32px; background-image: radial-gradient(circle, #9abafa12 1px, transparent 1px), radial-gradient(ellipse at 50% 30%, #314b792a, transparent 80%); background-size: 20px 20px, auto; }
-.showcase img { width: 321px; border-radius: 9px; box-shadow: 0 14px 36px #0007, 0 0 0 1px #ffffff12; }
+.popup-preview {
+  width: 274px;
+  height: 472px;
+  overflow: hidden;
+  border-radius: 9px;
+  box-shadow: 0 14px 36px #0007, 0 0 0 1px #ffffff12;
+}
+.popup-preview iframe {
+  display: block;
+  width: 238px;
+  height: 410px;
+  border: 0;
+  transform: scale(1.15);
+  transform-origin: top left;
+  pointer-events: none;
+}
 .showcase figcaption { margin: 0; padding: 13px 20px; color: #8e9db5; font-size: 10px; text-align: center; border-top: 1px solid #ffffff08; background: #080c1226; }
 .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-top: 1px solid var(--line); padding-top: 30px; }
 .section-heading h2 { margin: 0; font-size: 24px; }
