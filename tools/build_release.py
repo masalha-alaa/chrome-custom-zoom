@@ -16,10 +16,20 @@ def main():
     assert re.fullmatch(r'(0|[1-9]\d{0,4})(\.(0|[1-9]\d{0,4})){0,3}', version), 'Invalid version'
     assert all(int(p) <= 65535 for p in version.split('.')) and any(int(p) for p in version.split('.'))
     assert 0 < len(manifest['description']) <= 132, 'Description must fit 132 characters'
-    assert manifest['permissions'] == ['storage'], 'Review privacy declarations if permissions change'
+    assert manifest['permissions'] == ['storage', 'fontSettings'], 'Review privacy declarations if permissions change'
     assert not any(manifest.get(k) for k in ('host_permissions', 'content_scripts', 'optional_permissions', 'optional_host_permissions')), 'Review new access before packaging'
-    files = {'manifest.json', 'popup.html', 'popup.css', 'popup.js', 'LICENSE'}
+
+    files = {
+        'manifest.json',
+        'background.js',
+        'popup.html',
+        'popup.css',
+        'popup.js',
+    }
+
     assert manifest['action']['default_popup'] == 'popup.html'
+    assert manifest.get('background', {}).get('service_worker') == 'background.js'
+
     for icon_map in (manifest['icons'], manifest['action']['default_icon']):
         for size, name in icon_map.items():
             path = ROOT / name
@@ -28,18 +38,28 @@ def main():
             assert data[:8] == b'\x89PNG\r\n\x1a\n', f'{name} must be PNG'
             assert struct.unpack('>II', data[16:24]) == (int(size), int(size)), f'Wrong icon dimensions: {name}'
             files.add(name)
+
     assert '128' in manifest['icons'], '128px store icon is required'
+
+    for name in files:
+        path = ROOT / name
+        assert path.is_file(), f'Missing runtime file: {name}'
+
     output = ROOT / 'dist' / f'chrome-custom-zoom-{version}.zip'
     output.parent.mkdir(exist_ok=True)
+
     with ZipFile(output, 'w', compression=ZIP_DEFLATED) as archive:
         for name in sorted(files):
             info = ZipInfo(name, date_time=(2026, 1, 1, 0, 0, 0))
             info.compress_type = ZIP_DEFLATED
             info.external_attr = 0o100644 << 16
             archive.writestr(info, (ROOT / name).read_bytes())
+
     with ZipFile(output) as archive:
         assert archive.testzip() is None
         assert set(archive.namelist()) == files
+        assert 'manifest.json' in archive.namelist()
+
     print(f'{output} ({output.stat().st_size} bytes, {len(files)} files)')
 
 
